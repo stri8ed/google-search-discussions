@@ -1,0 +1,29 @@
+{
+    "extName": {
+        "message": "Discussions button for Google Search\u2122"
+    },
+    "extDesc": {
+        "message": "Adds filter buttons to Google\u2122 search results."
+    },
+    "optionsTitle": {
+        "message": "Toggle Google search filters:"
+    },
+    "discussions": {
+        "message": "Discussions"
+    },
+    "blogs": {
+        "message": "Blogs"
+    },
+    "recipes": {
+        "message": "Recipes"
+    },
+    "patents": {
+        "message": "Patents"
+    },
+    "optionsSaved": {
+        "message": "Options Saved."
+    },
+    "saveButton": {
+        "message": "Save"
+    }
+}
