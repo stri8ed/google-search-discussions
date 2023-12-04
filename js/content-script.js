@@ -55,7 +55,7 @@ function addMenuItem(menu){
     let enabled = false;
     const isActive = discussionActive();
     const href = document.location.origin + '/search?q=' + getQuery() + DISC_FILTER;
-    const button = menu?.querySelector('a')?.cloneNode();
+    const button = menu?.querySelector('a')?.cloneNode(true);
     if(!button) {
         return;
     }
@@ -74,22 +74,31 @@ function addMenuItem(menu){
     let cancelButton = Object.assign(document.createElement('a'), {
         className: 'cancel-discussions',
         title: "Cancel",
-        innerHTML: '<span style="color: red; margin-left: 5px;">🗙</span>',
+        innerHTML: '<span style="color: red; margin-left: 5px; text-align: bottom;">🗙</span>',
         onclick: (e) => {
             e.preventDefault();
             document.location.href = getNormalizedGoogleUrl();
             return false;
         }
     })
-    button.innerHTML = buttonContent;
+	const buttonInner = findDeepestNode(button);
+    buttonInner.innerHTML = buttonContent;
     if(isActive) {
-        button.appendChild(cancelButton);
+        buttonInner.appendChild(cancelButton);
     }
     if(!menu.querySelector('#discuss-btn')){
         const children = menu.querySelectorAll('a');
         const first = children[0];
         first.parentNode.insertBefore(button, first);
     }  
+}
+
+function findDeepestNode(node) {
+	let current = node;
+    while (current && current.children && current.children.length > 0) {
+        current = current.children[0];
+    }
+    return current;
 }
 
 /**
