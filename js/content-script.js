@@ -17,6 +17,7 @@ const IN_TEXT = [
 
 const MENU_CONTAINER = '[role="navigation"]';
 const DISC_FILTER = ` inurl:${IN_URL.join('|')} | intext:${IN_TEXT.join('|')}`;
+const BUTTON_ID = 'discuss-btn';
 
 let observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
@@ -52,21 +53,20 @@ function getMenuContainer() {
 }
 
 function addMenuItem(menu){
-    let enabled = false;
     const isActive = discussionActive();
     const href = document.location.origin + '/search?q=' + getQuery() + DISC_FILTER;
     const button = menu?.querySelector('a')?.cloneNode(true);
     if(!button) {
         return;
     }
-    button.setAttribute("id", "discuss-btn")
+    button.setAttribute("id", BUTTON_ID)
     let name = 'Discussions ';
     let goTo = (e) => {
         e.preventDefault();
         document.location.href = href; 
         return false;
     };
-    if(enabled) {
+    if(isActive) {
         goTo = (e) => e.preventDefault();
     }
     button.addEventListener('click', goTo, true);
@@ -74,31 +74,36 @@ function addMenuItem(menu){
     let cancelButton = Object.assign(document.createElement('a'), {
         className: 'cancel-discussions',
         title: "Cancel",
-        innerHTML: '<span style="color: red; margin-left: 5px; text-align: bottom;">🗙</span>',
+        innerHTML: '<span style="color: #bd0000; margin-left: 5px; vertical-align: text-top; display: inline-block; margin-top: -2px;">🗙</span>',
         onclick: (e) => {
             e.preventDefault();
             document.location.href = getNormalizedGoogleUrl();
             return false;
         }
     })
-	const buttonInner = findDeepestNode(button);
-    buttonInner.innerHTML = buttonContent;
+    button.innerHTML = buttonContent;
     if(isActive) {
-        buttonInner.appendChild(cancelButton);
+        button.appendChild(cancelButton);
     }
-    if(!menu.querySelector('#discuss-btn')){
+    if(!menu.querySelector(`#${BUTTON_ID}`)){
         const children = menu.querySelectorAll('a');
         const first = children[0];
         first.parentNode.insertBefore(button, first);
+        normalizeFilterUrls(menu);
     }  
 }
 
-function findDeepestNode(node) {
-	let current = node;
-    while (current && current.children && current.children.length > 0) {
-        current = current.children[0];
-    }
-    return current;
+/**
+ * Remove filters from other menu items.
+ */
+function normalizeFilterUrls(menu) {
+    Array.from(menu.querySelectorAll('a'))
+        .forEach(a => {
+            if(a.id !== BUTTON_ID) {
+                const tbm = a.href.includes('tbm=') ? a.href.match(/tbm=[^&]+/)[0] : '';
+                a.href = getNormalizedGoogleUrl() + '&' + tbm;
+            }
+        })
 }
 
 /**
