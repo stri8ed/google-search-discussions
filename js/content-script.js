@@ -55,11 +55,12 @@ function getMenuContainer() {
 function addMenuItem(menu){
     const isActive = discussionActive();
     const href = document.location.origin + '/search?q=' + getQuery() + DISC_FILTER;
-    const button = menu?.querySelector('a')?.cloneNode(true);
-    if(!button) {
+    const list = menu?.querySelector('[role="list"]');
+    if(!list) {
         return;
     }
-    button.setAttribute("id", BUTTON_ID)
+    const button = list.lastChild.previousSibling.cloneNode(true);
+    button.setAttribute("id", BUTTON_ID);
     let name = 'Discussions ';
     let goTo = (e) => {
         e.preventDefault();
@@ -70,7 +71,7 @@ function addMenuItem(menu){
         goTo = (e) => e.preventDefault();
     }
     button.addEventListener('click', goTo, true);
-    let buttonContent = `<span>${name}</span>`;
+    let buttonContent = `<a class="${button.firstChild.className}"><div class="${button.firstChild.firstChild.className}">${name}</div></a>`;
     let cancelButton = Object.assign(document.createElement('a'), {
         className: 'cancel-discussions',
         title: "Cancel",
@@ -86,9 +87,7 @@ function addMenuItem(menu){
         button.appendChild(cancelButton);
     }
     if(!menu.querySelector(`#${BUTTON_ID}`)){
-        const children = menu.querySelectorAll('a');
-        const first = children[0];
-        first.parentNode.insertBefore(button, first);
+        list.insertBefore(button, list.lastChild);
         normalizeFilterUrls(menu);
     }  
 }
