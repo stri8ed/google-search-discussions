@@ -75,7 +75,7 @@ function addMenuItem(menu){
     let cancelButton = Object.assign(document.createElement('a'), {
         className: 'cancel-discussions',
         title: "Cancel",
-        innerHTML: '<span style="color: #bd0000; margin-left: 5px; vertical-align: text-top; display: inline-block; margin-top: -2px;">🗙</span>',
+        innerHTML: '<span style="color: #bd0000; vertical-align: middle; display: inline-block; ">✖</span>',
         onclick: (e) => {
             e.preventDefault();
             document.location.href = getNormalizedGoogleUrl();
