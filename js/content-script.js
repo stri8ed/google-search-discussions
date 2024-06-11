@@ -59,7 +59,7 @@ function addMenuItem(menu){
     if(!list) {
         return;
     }
-    const button = list.lastChild.previousSibling.cloneNode(true);
+    const button = document.createElement("div");
     button.setAttribute("id", BUTTON_ID);
     let name = 'Discussions ';
     let goTo = (e) => {
@@ -71,11 +71,12 @@ function addMenuItem(menu){
         goTo = (e) => e.preventDefault();
     }
     button.addEventListener('click', goTo, true);
-    let buttonContent = `<a class="${button.firstChild.className}"><div class="${button.firstChild.firstChild.className}">${name}</div></a>`;
+    const mapsButton = list.lastChild.previousSibling;
+    let buttonContent = `<a href="" class="${mapsButton.firstChild.className}"><div class="${mapsButton.firstChild.firstChild.className}">${name}</div></a>`;
     let cancelButton = Object.assign(document.createElement('a'), {
         className: 'cancel-discussions',
         title: "Cancel",
-        innerHTML: '<span style="color: #bd0000; vertical-align: middle; display: inline-block; ">✖</span>',
+        innerHTML: '<span style="color: #bd0000; vertical-align: middle; display: inline-block; cursor: pointer;">✖</span>',
         onclick: (e) => {
             e.preventDefault();
             document.location.href = getNormalizedGoogleUrl();
@@ -83,6 +84,7 @@ function addMenuItem(menu){
         }
     })
     button.innerHTML = buttonContent;
+    list.insertBefore(button, list.lastChild);
     if(isActive) {
         button.appendChild(cancelButton);
     }
