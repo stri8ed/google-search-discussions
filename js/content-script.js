@@ -15,6 +15,7 @@ const IN_TEXT = [
 	`"send private message"`
 ];
 
+const FORUM_PARAM = "udm=18"
 const MENU_CONTAINER = '[role="navigation"]';
 const DISC_FILTER = ` inurl:${IN_URL.join('|')} | intext:${IN_TEXT.join('|')}`;
 const BUTTON_ID = 'discuss-btn';
@@ -38,6 +39,10 @@ let observer = new MutationObserver(function(mutations) {
     getMenuContainer().then(addMenuItem);
 })();
 
+function getMode() {
+    return chrome.storage.sync.get({mode: 'filter'});
+}
+
 function getMenuContainer() {
     return new Promise(function(res, rej) {
         let interval = setInterval(function() {
@@ -53,26 +58,61 @@ function getMenuContainer() {
 }
 
 function addMenuItem(menu){
-    const isActive = discussionActive();
-    const href = document.location.origin + '/search?q=' + getQuery() + DISC_FILTER;
+    if(menu.querySelector(`#${BUTTON_ID}`)) {
+        return;
+    }
+    getMode().then(mode => {
+        if(mode.mode === 'filter') {
+            addDiscussionsMenuItem(menu);
+        } else {
+            addForumMenuItem(menu);
+        }
+    })
+
+}
+
+function addButtonToMenu(menu, label, href){
     const list = menu?.querySelector('[role="list"]');
     if(!list) {
         return;
     }
+    const listItems = Array.from(list.querySelectorAll(':scope > div'))
+    const prevButton = listItems[listItems.length - 2]
     const button = document.createElement("div");
     button.setAttribute("id", BUTTON_ID);
-    let name = 'Discussions ';
-    let goTo = (e) => {
+    const goTo = (e) => {
         e.preventDefault();
-        document.location.href = href; 
+        if(href) {
+            document.location.href = href;
+        }
         return false;
     };
-    if(isActive) {
-        goTo = (e) => e.preventDefault();
-    }
     button.addEventListener('click', goTo, true);
-    const mapsButton = list.lastChild.previousSibling;
-    let buttonContent = `<a href="" class="${mapsButton.firstChild.className}"><div class="${mapsButton.firstChild.firstChild.className}">${name}</div></a>`;
+    button.innerHTML = `<a href="" class="${prevButton.firstChild.className}">
+        <div class="${prevButton.firstChild.firstChild.className}">${label}</div>
+    </a>`;
+    list.insertBefore(button, list.lastChild);
+    return button;
+}
+
+function addForumMenuItem(menu){
+    const isActive = document.location.href.includes(FORUM_PARAM);
+    if(isActive) {
+        return;
+    }
+    const selector = `a[href*="${FORUM_PARAM}"]`;
+    const existingButton = menu.querySelector(selector);
+    if(existingButton && !existingButton.closest('[aria-haspopup="true"]')) {
+        return;
+    }
+    const href = document.location.origin + '/search?q=' + getQuery() + '&' + FORUM_PARAM;
+    addButtonToMenu(menu, 'Forums', href);
+}
+
+function addDiscussionsMenuItem(menu){
+    const isActive = discussionActive();
+    const href = !isActive ? (document.location.origin + '/search?q=' + getQuery() + DISC_FILTER) : '';
+    const button = addButtonToMenu(menu, 'Discussions', href);
     let cancelButton = Object.assign(document.createElement('a'), {
         className: 'cancel-discussions',
         title: "Cancel",
@@ -83,15 +123,10 @@ function addMenuItem(menu){
             return false;
         }
     })
-    button.innerHTML = buttonContent;
-    list.insertBefore(button, list.lastChild);
     if(isActive) {
         button.appendChild(cancelButton);
     }
-    if(!menu.querySelector(`#${BUTTON_ID}`)){
-        list.insertBefore(button, list.lastChild);
-        normalizeFilterUrls(menu);
-    }  
+    normalizeFilterUrls(menu);
 }
 
 /**

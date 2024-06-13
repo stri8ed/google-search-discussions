@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Settings Page</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    div {
+        margin-bottom: 5px;
+    }
+
+    label {
+        display: block;
+    }
+
+    input[type="radio"] {
+        margin-right: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #3057b8;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+<h1>Discussions button settings</h1>
+<div>
+    <div>
+        <label>
+            <input id="filter" type="radio" name="mode" value="filter"> Use Discussion Search Filters
+        </label>
+    </div>
+    <div>
+        <label>
+            <input id="forum" type="radio" name="mode" value="forum" checked> Use Google Forum Search
+        </label>
+    </div>
+</div>
+<br/><br/>
+<div>
+    <button id="save">Save</button>
+</div>
+<script src="/js/options.js"></script>
+</body>
+</html>

@@ -1,13 +1,14 @@
 {
   "name": "__MSG_extName__",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "description": "__MSG_extDesc__",
   "manifest_version": 3,
   "icons": { "48": "/img/icon48.png", "128": "/img/icon128.png" },
   "default_locale": "en",
   "permissions": [
-    
+    "storage"
   ],
+  "options_page": "html/options.html",
   "content_scripts": [
     {
       "matches": ["*://www.google.com/*", 
