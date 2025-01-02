@@ -119,7 +119,7 @@ function addDiscussionsMenuItem(menu){
         innerHTML: '<span style="color: #bd0000; vertical-align: middle; display: inline-block; cursor: pointer;">✖</span>',
         onclick: (e) => {
             e.preventDefault();
-            document.location.href = getNormalizedGoogleUrl();
+            document.location.href = getNormalizedGoogleUrl(document.location.href);
             return false;
         }
     })
@@ -135,9 +135,8 @@ function addDiscussionsMenuItem(menu){
 function normalizeFilterUrls(menu) {
     Array.from(menu.querySelectorAll('a'))
         .forEach(a => {
-            if(a.id !== BUTTON_ID) {
-                const tbm = a.href.includes('tbm=') ? a.href.match(/tbm=[^&]+/)[0] : '';
-                a.href = getNormalizedGoogleUrl() + '&' + tbm;
+            if(a.id !== BUTTON_ID && a.href != '') {
+                a.href = getNormalizedGoogleUrl(a.href);
             }
         })
 }
@@ -156,10 +155,9 @@ function discussionActive() {
  * Strip current Google search query of any discussions filter.
  * @returns {string}
  */
-function getNormalizedGoogleUrl() {
+function getNormalizedGoogleUrl(href) {
     const filter = DISC_FILTER.match(/\S+?\|/)[0];
-    let query = decodeURI(getQuery()).replace(new RegExp( '[ +]?' + filter.replace('|', '\\|') + '.+' ), '');
-    return document.location.origin + '/search?q=' + query;
+    return decodeURI(href).replace(new RegExp( '[ +]?' + filter.replace('|', '\\|') + '[^&]+' ), '');
 }
 
 /**
